@@ -1,0 +1,227 @@
+#include <iostream>
+#include <iomanip>
+#include <string.h>
+#include <fstream> 
+using namespace std;
+
+struct friends
+{
+	char name[20];
+	char sex;
+	char tel[13];
+	char wechat[30];
+	char email[20];
+};
+
+char Menu()
+{
+	char a;
+	cout << "课题名：同学录" << '\t' << "班级：信息学院1806班" << '\n';
+	cout << "小组成员（学号）: 杨诗（20181003062）		叶浩霖（20181003046）		曾玉宇（20181003047）"<<'\n';
+	cout <<'\n';
+	cout <<"----------------------------------------------------------------------------------------------------"<<'\n';
+	cout << "\t\t\t" <<"            同学录"<<'\n';
+	cout << "\t\t\t" <<"新建同学录，输入同学相关信息请输入1；" <<'\n';
+	cout << "\t\t\t" <<"输出已有好友信息请输入2；" <<'\n';
+	cout << "\t\t\t" <<"通过好友名字查询电话号码请输入3；" <<'\n';
+	cout << "\t\t\t" <<"修改好友数据请输入4"<<'\n';
+	cout << "\t\t\t" <<"退出请输入0(请输入0再退出，否则无法保存数据)"<<'\n';
+	cout <<"----------------------------------------------------------------------------------------------------"<<'\n';
+	cin >> a;
+	return a;
+}
+
+friends InputInfo()
+{
+	friends fri;
+	cout << "新建同学录，请输入新的好友的名字：";
+	cin >> fri.name;
+	cout << "请输入好友的性别(输入M代表男性，输入F代表女性)：";
+	cin >> fri.sex;
+	cout << "请输入好友的电话：";
+	cin >> fri.tel;
+	cout << "请输入好友的微信：";
+	cin >> fri.wechat;
+	cout << "请输入好友的email："; 
+	cin >> fri.email;
+	cout << "录入成功！"<<'\n';
+	cout <<"----------------------------------------------------------------------------------------------------"<<'\n';
+	return fri;
+}
+
+void Output(friends fri)
+{
+	cout<<setw(20)<<fri.name<<setw(10)<<fri.sex<<setw(20)<<fri.tel<<setw(20)<<fri.wechat<<setw(30)<<fri.email<<'\n';
+}
+
+bool Compare(char str1[],char str2[]) {
+	int i = 0,j = 0;
+	while( i < strlen(str1) && j < strlen(str2) ) {
+		if( str1[i] == str2[j] ) {
+			i++;
+			j++;
+		}
+		else {
+			if( i == 0 ) {
+				j++;
+			}
+			else{
+				i = 0;
+			}
+	 	}
+	}
+	if( i == strlen(str1) ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+int main() {
+	/*文件导入*/
+	int sum = 0;
+	char j = '2';
+	int txtSum;
+	friends fri[100];
+	fstream infile;
+	int modify;								//用于修改同学录 
+    infile.open("classmate.txt");          // B，一般应给出第二个实参
+    infile >> txtSum;
+	while(sum < txtSum) {
+   		infile >> fri[sum].name;
+		infile >> fri[sum].sex;
+		infile >> fri[sum].tel;
+		infile >> fri[sum].wechat;
+		infile >> fri[sum].email;
+		sum++;
+	}
+	/*文件导入*/
+	while( j != '0') {
+		j = '2';
+		char a = Menu();		//主菜单
+		switch(a) {
+			case '0':		//退出程序 
+				j = '0';
+				break;
+			case '1':		//新建同学录
+				while( j != '0' && j != '1' ) {
+						fri[sum] = InputInfo();
+						sum++;
+						cout << "是否继续录入好友数据？"<<'\n';
+						cout << "输入1返回主菜单；"<<'\n';
+						cout << "输入0退出程序；"<<'\n';
+						cout << "输入其他值继续录入好友数据；"<<'\n';
+						cin >> j;
+						system("cls");
+						
+					}
+				break;
+			case '2':		//输出已有好友信息
+				cout<<setw(20)<<"姓名"<<setw(10)<<"性别"<<setw(20)<<"电话"<<setw(20)<<"微信"<<setw(30)<<"email"<<'\n';
+				for( int n = 0; n < sum; n++ ) {
+					Output( fri[n] );
+				}
+				system("pause");
+				cout << "键入0表示退出程序，键入其他值返回主菜单";
+				cin >> j;
+				system("cls");
+				break;
+			case '3':		//通过好友名字查询电话号码
+				while( j != '0' && j != '1') {
+					char findTel[10];
+					cout << "请输入好友名字："<<'\n';
+					cin >> findTel;
+					cout << '\n';
+					cout<<'\t'<<'\t'<<setw(10)<<"查询到：姓名"<<setw(15)<<"电话"<<'\n'; 
+					for( int i = 0; i < sum; i++ ) {
+						if( Compare(findTel, fri[i].name)) {
+							cout<<'\t'<<'\t'<<setw(10)<<fri[i].name<<setw(15)<<fri[i].tel<<'\n';
+						}
+					}
+					cout << "是否继续查询？键入1表示返回主菜单，键入0表示退出程序，键入其他值继续查询"<<'\n';
+					cin >> j;
+					system("cls");
+				}
+				break;
+			case '4':
+				while( j != '0' && j != '1') {
+					cout<<"编号"<<setw(20)<<"姓名"<<setw(10)<<"性别"<<setw(20)<<"电话"<<setw(20)<<"微信"<<setw(30)<<"email"<<'\n';
+					for( int n = 0; n < sum; n++ ) {
+						cout << n+1;
+						Output( fri[n] );
+					}
+					cout << "请输入需要修改的编号："<<'\n';
+					cin >> modify;
+					while(cin.fail() || modify > sum || modify < 1)
+					{
+						cout<<"错误！请输入一个表格中的编码："<<'\n';
+						cin.clear();
+						cin.ignore();
+						cin>>modify;
+						
+					}
+					modify -= 1;
+					system("cls");
+					cout << setw(20)<<"姓名"<<setw(10)<<"性别"<<setw(20)<<"电话"<<setw(20)<<"微信"<<setw(30)<<"email"<<'\n';
+					cout << setw(20)<<fri[modify].name<<setw(10)<<fri[modify].sex<<setw(20)<<fri[modify].tel<<setw(20)<<fri[modify].wechat<<setw(30)<<fri[modify].email<<'\n';
+					j = '1';
+					char ch;
+					while( j == '1' ) {
+						cout << "请选择修改的数据："<<'\n';
+						cout << "1.姓名；"<<'\n';
+						cout << "2.性别；"<<'\n';
+						cout << "3.电话；"<<'\n';
+						cout << "4.微信；"<<'\n';
+						cout << "5.email；"<<'\n';
+						cin >> ch;
+						switch( ch ) {
+							case '1':
+								cout << "修改姓名：";
+								cin >> fri[modify].name;	break;
+							case '2':
+								cout << "修改性别：";
+								cin >> fri[modify].sex;	break;
+							case '3':
+								cout << "修改电话：";
+								cin >> fri[modify].tel;	break;
+							case '4':
+								cout << "修改微信：";
+								cin >> fri[modify].wechat;	break;
+							case '5':
+								cout << "修改email：";
+								cin >> fri[modify].email;	break;
+							default:
+								cout << "请输入正确数字";
+						}
+						cout << "继续修改此条？(是，请输入1)"<<'\n';
+						cin >> j;
+					}
+					cout << "是否继续修改？键入1表示返回主菜单，键入0表示退出程序，键入其他值继续修改"<<'\n';
+					cin >> j;
+					system("cls");
+				}
+				break;
+			default:
+				cout << "请输入正确的数字"<<'\n';
+				system("pause");
+				system("cls");
+			
+		}
+	}
+	//将数据导入文件
+	ofstream out;
+	out.open("classmate.txt");
+	out << sum <<'\n';
+	for(int i = 0; i < sum; i++) {
+		out << fri[i].name <<" ";
+		out << fri[i].sex <<" ";
+		out << fri[i].tel <<" ";
+		out << fri[i].wechat <<" ";
+		out << fri[i].email <<'\n';
+	}
+	out.close();
+	cout<<"同学录保存完毕"<<'\n';
+	system("pause");
+	return 0;
+}
